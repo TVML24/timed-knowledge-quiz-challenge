@@ -1,0 +1,38 @@
+header {
+    font-size: 26px;
+    line-height: 2;
+    background: yellow;
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 1%;
+}
+
+body {
+    height: 100vh;
+}
+
+#high-score-link {
+    background: green;
+    padding-right: 3%;
+    padding-left: 3%;
+}
+
+#time-holder {
+    background: green;
+    padding-right: 8%;
+    padding-left: 3%;
+}
+
+main {
+    background: orange;
+    position: relative;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.wrapper {
+    background: lightcoral;
+    height: 100%;
+    width: 60%;
+}
