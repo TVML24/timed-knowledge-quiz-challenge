@@ -36,3 +36,7 @@ main {
     height: 100%;
     width: 60%;
 }
+
+.main-heading {
+    font-size: 72px;
+}
