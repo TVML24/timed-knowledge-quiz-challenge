@@ -10,9 +10,11 @@ var answerResponse = document.getElementById("answer-container");
 var chosenAnswer = " ";
 
 // variable that holds the current question
-var currentQuestion = "";
+var currentQuestion = " ";
 
-// variable that holds 
+// variable that holds the final scoring info so that it can be passed to local storage
+var finalScore = "";
+var initials;
 
 // variables for the timer
 var countDown = 100;
@@ -22,18 +24,26 @@ var timer;
 var progress = 0; 
 
 // establish object with questions as value in key value pair
-var questions = ["Which Javascript method can be used to get the sum of all the numbers in an array?", "Where can you access a variable that was delcared inside an if statement that is inside of a function?"];
+var questions = ["Which Javascript method can be used to get the sum of all the numbers in an array?", 
+"Where can you access a variable that was delcared inside an if statement that is inside of a function?", 
+"Which method returns a new array containing the result of a function for each element in another array?", 
+"Which method adds a value to the font of an array?", 
+"which method returns an array containing only the values in an array that meet a specified condition?", 
+"Which method removes an element from the DOM?", "Which method stops event bubbling?", 
+"Which method allows a string to be split according to a specified criteria and inserted into an array in it's pieces?", 
+"Which method stops the browser from carrying out pre-defined instructions on an event?",
+"Which method can call a function to be executed every x number of milliseconds?"];
 
 
 // Establish object with question and answers as key value pairs
-var correctAnswers = [".concat()", "Anywhere inside that 'if statement'"];
+var correctAnswers = [".concat()", "Anywhere inside that 'if statement'", ".map()", ".push()", ".filter()", ".remove()", ".stopPropagation()", ".split()", ".preventDefault()", ".setInterval()"];
 
 
 // Establish object with questions identical to the above and four possible answers
-var buttononeAnswers = [".join()", "Anywhere inside the function"];
-var buttontwoAnswers = [".sumAll()", "Anywhere inside that 'if statement'"];
-var buttonthreeAnswers = [".combine()", "Globally"];
-var buttonfourAnswers = [".concat()", "In any other function it is referenced"];
+var buttononeAnswers = [".join()", "Anywhere inside the function", ".for()", ".splice()", ".filter()", ".remove()", ".noeventBubble()", ".filter()", ".stopPropagation()", ".setTimeout()"];
+var buttontwoAnswers = [".sumAll()", "Anywhere inside that 'if statement'", ".while()", ".push()", ".sort()", ".delete()", ".preventPropagation()", ".insert()", ".stopDefault()", ".setTimer()"];
+var buttonthreeAnswers = [".combine()", "Globally", ".map()", ".append()", ".matchTo()", ".unAppend()", ".stopBubble()", ".split()", ".preventDefault()", ".executeInterval()"];
+var buttonfourAnswers = [".concat()", "In any other function it is referenced", ".iterateOver()", ".addTo()", ".getvalueBy()", ".domRemove()", ".stopPropagation()", ".createArray()", ".cancel()", ".setInterval()"];
 
 // init() function that constructs heading with start button and instructions inside questionHolder
 function init() {
@@ -42,7 +52,8 @@ function init() {
     var startBtn = document.createElement('button');
         introTitle.textContent = "Coding Quiz Challenge";
         introText.textContent = "Try to answer the folowing code-related questions within the time limit. Keep in mind that incorrect answers will penalise your score-time by ten seconds!";
-        startBtn.textContent = "Start Quiz!"
+        startBtn.textContent = "Start Quiz!";
+        introTitle.className = "impressive-heading";
         introTitle.id = "main-heading";
         introText.id = "paragraph-text";
         startBtn.id = "start-button";
@@ -62,6 +73,8 @@ function startGame() {
     introTextTwo.remove();
     progress = 0;
     countDown = 100;
+    finalScore = "";
+    initials = "";
     timerFunction();
     questionChooser();
 }
@@ -95,6 +108,7 @@ function questionChooser() {
     question.className = "printed-question";
     question.id = "current-question";
     question.textContent = currentQuestion;
+    console.log(currentQuestion);
     questionHolder.appendChild(question);
     buttonBuilder();
 }
@@ -107,15 +121,14 @@ function questionChooser() {
 // adds event listener to each button that will call answerSelector
 // if progress > 0 - for loop that changes text content of buttons rather than constructing new buttons
 function buttonBuilder() {
-    if (progress === 0) {
-        var buttonOne = document.createElement('button');
-        var buttonTwo = document.createElement('button');
-        var buttonThree = document.createElement('button');
-        var buttonFour = document.createElement('button');
-        buttonOne.textContent = buttononeAnswers[0];
-        buttonTwo.textContent = buttontwoAnswers[0];
-        buttonThree.textContent = buttonthreeAnswers[0];
-        buttonFour.textContent = buttonfourAnswers[0];
+    var buttonOne = document.createElement('button');
+    var buttonTwo = document.createElement('button');
+    var buttonThree = document.createElement('button');
+    var buttonFour = document.createElement('button');
+        buttonOne.textContent = buttononeAnswers[progress];
+        buttonTwo.textContent = buttontwoAnswers[progress];
+        buttonThree.textContent = buttonthreeAnswers[progress];
+        buttonFour.textContent = buttonfourAnswers[progress];
         buttonOne.id = "button-one";
         buttonTwo.id = "button-two";
         buttonThree.id = "button-three";
@@ -144,33 +157,8 @@ function buttonBuilder() {
             chosenAnswer = buttonFour.textContent;
             answerCheck();
         })
-    } else {
-        var buttonOne = document.getElementById("button-one");
-        var buttonTwo = document.getElementById("button-two");
-        var buttonThree = document.getElementById("button-three");
-        var buttonFour = document.getElementById("button-four");
-        buttonOne.textContent = buttononeAnswers[progress];
-        buttonTwo.textContent = buttontwoAnswers[progress];
-        buttonThree.textContent = buttonthreeAnswers[progress];
-        buttonFour.textContent = buttonfourAnswers[progress];
-        buttonOne.addEventListener("click", function () {
-            chosenAnswer = buttonOne.textContent;
-            answerCheck();
-        })
-        buttonTwo.addEventListener("click", function () {
-            chosenAnswer = buttonTwo.textContent;
-            answerCheck();
-        })
-        buttonThree.addEventListener("click", function () {
-            chosenAnswer = buttonThree.textContent;
-            answerCheck();
-        })
-        buttonFour.addEventListener("click", function () {
-            chosenAnswer = buttonFour.textContent;
-            answerCheck();
-        })
     }
-}
+
 
 // answerCheck()
 // for correct answer
@@ -179,33 +167,40 @@ function buttonBuilder() {
 // displays correct in answerResponse
 // progress++
 // if (progress = 10 calls wellDone() function) 
-
-function answerCheck() {
-    if (chosenAnswer === correctAnswers[progress]) {
-        if (progress < 10) {
-            var question = document.getElementById("current-question");
-            question.remove();
-            progress++;
-            answerResponse.textContent = "Correct!";
-            questionChooser();
-        } else {
-            var question = document.getElementById("current-question");
-            question.remove();
-            clearButtons();
-            welldone();
-        }
 // for incorrect answer
 // displays incorrect in answer response
 // countDown - 10;
 // if countdown = 0
+
+function answerCheck() {
+    if (chosenAnswer === correctAnswers[progress]) {
+        var questiontwo = document.getElementById("current-question");
+        questiontwo.remove();
+        answerResponse.textContent = "Correct!";
+        progress++;
+        checkWin();
     } else {
         answerResponse.textContent = "Incorrect!";
         countDown -= 10;
-        if (countDown < 1) {
+        if (countDown <= 1) {
             youLost();
         } else {
             return;
         }
+    }
+}
+
+// seperate checkWin() function for easier debugging
+
+function checkWin() {
+    if (progress < questions.length) {
+        currentQuestion = "";
+        console.log(progress);
+        clearButtons();
+        questionChooser();
+    } else {
+        clearInterval(timer);
+        wellDone();
     }
 }
 
@@ -217,17 +212,11 @@ function clearButtons() {
     var buttonTwo = document.getElementById("button-two");
     var buttonThree = document.getElementById("button-three");
     var buttonFour = document.getElementById("button-four");
-    buttonOne.remove();
-    buttonTwo.remove();
-    buttonThree.remove();
-    buttonFour.remove();
+        buttonOne.remove();
+        buttonTwo.remove();
+        buttonThree.remove();
+        buttonFour.remove();
 }
-
-init();
-
-
-
-
 
 // wellDone()
 // calls clearButtons()
@@ -235,6 +224,53 @@ init();
 // countdown = finalScore
 // buttonHolder element displays "your final score is + finalScore"
 // answerResponse element has "enter initials" + an input + submit button
+
+// wellDone()
+// calls clearButtons()
+// questionHolder displays Well Done!
+// countdown = finalScore
+// buttonHolder element displays "your final score is + finalScore"
+// answerResponse element has "enter initials" + an input + submit button
+function wellDone() {
+    clearButtons();
+    finalScore = countDown;
+    answerResponse.textContent = " ";
+    var victoryTitle = document.createElement('h1');
+    var victoryText = document.createElement('h2');
+    var victoryinputLabel = document.createElement ("h3");
+    var victoryInput = document.createElement("input");
+    var victoryButton = document.createElement('input');
+    victoryInput.type = "text";
+    victoryButton.type = "submit";
+    victoryInput.name = "intitials-input";
+    victoryTitle.className = "impressive-heading";
+    victoryinputLabel.id = "input-label";
+    victoryTitle.id = "victory-title";
+    victoryText.id = "victory-text";
+    victoryInput.id = "victory-input";
+    victoryButton.id = "victory-button";
+    victoryTitle.textContent = "Well Done!";
+    victoryText.textContent = "Your final score is " + countDown; 
+    victoryinputLabel.textContent= "Enter your intials!";
+    victoryButton.textContent= "Submit score!";
+    questionHolder.appendChild(victoryTitle);
+    questionHolder.appendChild(victoryText);
+    questionHolder.appendChild(victoryinputLabel);
+    answerResponse.appendChild(victoryInput);
+    answerResponse.appendChild(victoryButton);
+    victoryButton.addEventListener("click", storeResult);
+}
+
+function storeResult() {
+    var input = document.getElementById("victory-input").value;
+    initials = input;
+    
+}
+
+init();
+
+
+
 
 // storeResult()
 // this function stores the text from the text input generated by wellDone() into local storage and finalScore variable

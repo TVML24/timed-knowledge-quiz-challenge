@@ -40,3 +40,16 @@ main {
 .main-heading {
     font-size: 72px;
 }
+
+#button-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.answer-button {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
