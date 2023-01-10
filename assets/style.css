@@ -92,7 +92,7 @@ main {
 }
 
 .intro-button {
-    margin-left: 40%;
+    margin-left: 45%;
     background-color: blueviolet;
     color: antiquewhite;
     font-size: 28px;
@@ -123,4 +123,11 @@ main {
 .back-button {
     margin-left: 12%;
     margin-right: 10%;
+}
+
+.failed-button {
+    margin-left: 45%;
+    background-color: blueviolet;
+    color: antiquewhite;
+    font-size: 28px;
 }

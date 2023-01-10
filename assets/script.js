@@ -267,6 +267,8 @@ function youLost() {
     var failureText = document.createElement('h2');
     var failureButton = document.createElement('button');
     failureTitle.className = "impressive-heading";
+    failureText.className = "paragraph";
+    failureButton.className = "failed-button";
     failureTitle.id = "failure-title";
     failureText.id = "failure-text";
     failureButton.id = "failure-button";

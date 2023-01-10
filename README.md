@@ -3,6 +3,7 @@
 ## Description
 
 The motivation behind this project was to practice and implement slightly more advanced Javascript techniques than those previously used to create a time quiz that would allow the user to test their knowledge of Javascript. This challenge really forced me to understand for loops, event listeners, declaring functions, local storage, creating, appending and removing elements. It was the first complex application I have designed and it really brought home to be how things can stack up if you are missing key concepts (specifically truthiness!). It has also taught me that it is perhaps sometimes best to have multiple html pages instead of trying to fit every function onto one which was exhausting. In retrospect I would have changed and incredible amount of the code I have written to make it more robust and more simple - but I can only understand this now that I have finished writing it. It probably could have been considerably shorter if I knew then, what I know now.
+Part of the reason I wrote it this way though is because I was under the impression the functionality had to be achieved purely through Javascript!
 
 ## Table of Contents
 
@@ -25,11 +26,11 @@ If the user answers all ten questions correctly they may submit their initials a
 If the user resets the scores local memory will be cleared and the high scores board will update in realtime.
 
 Screenshot:
-![My Password Generator](./assets/images/screenshot.jpg)
+![My Timed Quiz Challenge](./assets/images/screen.jpg)
 
 ## Deployment
 
-https://tvml24.github.io/unique-personal-algorithmic-password-generator/
+https://tvml24.github.io/timed-knowledge-quiz-challenge/
 
 ## Credits
 
