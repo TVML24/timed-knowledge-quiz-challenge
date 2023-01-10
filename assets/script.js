@@ -15,6 +15,8 @@ var currentQuestion = " ";
 // variable that holds the final scoring info so that it can be passed to local storage
 var finalScore = "";
 var initials;
+var highScores = JSON.parse(localStorage.getItem('highScores')) || [];
+var initialsRecord = JSON.parse(localStorage.getItem("initials")) || [];
 
 // variables for the timer
 var countDown = 100;
@@ -22,6 +24,21 @@ var timer;
 
 // variable that will end the game when it gets to the maximum number of questions
 var progress = 0; 
+
+// variables that check for game condition when viewing the highscores
+var gameStarted = false;
+var gameWon = false;
+var gameLost = false;
+var preGame = false;
+var postGame = false;
+var athighScores = false;
+var scoreReset = false;
+
+// event handler for high scores button
+var permanenthighscoresButton = document.getElementById("view-high-scores");
+    permanenthighscoresButton.addEventListener("click", gethighScores);
+        highscoreClicked = true;
+        console.log(highscoreClicked);
 
 // establish object with questions as value in key value pair
 var questions = ["Which Javascript method can be used to get the sum of all the numbers in an array?", 
@@ -46,6 +63,7 @@ var buttonthreeAnswers = [".combine()", "Globally", ".map()", ".append()", ".mat
 var buttonfourAnswers = [".concat()", "In any other function it is referenced", ".iterateOver()", ".addTo()", ".getvalueBy()", ".domRemove()", ".stopPropagation()", ".createArray()", ".cancel()", ".setInterval()"];
 
 // init() function that constructs heading with start button and instructions inside questionHolder
+// updates game conditions that have been changed through the course of the game
 function init() {
     var introTitle = document.createElement('h1');
     var introText = document.createElement('h2');
@@ -61,20 +79,28 @@ function init() {
         questionHolder.appendChild(introText);
         questionHolder.appendChild(startBtn);
         startBtn.addEventListener("click", startGame);
+        preGame = true;
+        postGame = false;
+        scoreReset = false;
 }
 
 // startGame function that runs from an event listener attached to the button built by init()
+// updates game conditions that have been changed through the course of the game
 function startGame() {
     var startBtnTwo = document.getElementById("start-button");
     var introTitleTwo = document.getElementById("main-heading");
     var introTextTwo = document.getElementById("paragraph-text");
-    startBtnTwo.remove();
-    introTitleTwo.remove();
-    introTextTwo.remove();
-    progress = 0;
-    countDown = 100;
-    finalScore = "";
-    initials = "";
+        startBtnTwo.remove();
+        introTitleTwo.remove();
+        introTextTwo.remove();
+        progress = 0;
+        countDown = 100;
+        finalScore = "";
+        preGame = false;
+        initials = null;
+        gameStarted = true;
+        gameWon = false;
+        gameLost = false;
     timerFunction();
     questionChooser();
 }
@@ -89,6 +115,8 @@ function timerFunction() {
         timeRemaining.textContent = countDown;
         if (countDown === 0) {
             clearInterval(timer);
+            var questiontwo = document.getElementById("current-question");
+            questiontwo.remove();
             youLost();
         }
         answerResponse.textContent = " ";
@@ -116,10 +144,11 @@ function questionChooser() {
 // buttonbuilder()
 // function that builds the answer buttons based on the possible answers given in the questions object
 // if progress = 0; 
-// for loop that continues for the length of the questionone array inside the possibleAnswers object - https://stackoverflow.com/questions/14379274/how-to-iterate-over-a-javascript-object
+// for loop that continues for the length of the questionone array inside the possibleAnswers object
+// This was changed to arrays for ease of use
 // for each iteration it inserts a button into the buttonHolder Element and changes it's text content to the possible answer given to it by the object
 // adds event listener to each button that will call answerSelector
-// if progress > 0 - for loop that changes text content of buttons rather than constructing new buttons
+
 function buttonBuilder() {
     var buttonOne = document.createElement('button');
     var buttonTwo = document.createElement('button');
@@ -170,7 +199,7 @@ function buttonBuilder() {
 // for incorrect answer
 // displays incorrect in answer response
 // countDown - 10;
-// if countdown = 0
+// if countdown = 0 calls youlost()
 
 function answerCheck() {
     if (chosenAnswer === correctAnswers[progress]) {
@@ -183,6 +212,8 @@ function answerCheck() {
         answerResponse.textContent = "Incorrect!";
         countDown -= 10;
         if (countDown <= 1) {
+            var questiontwo = document.getElementById("current-question");
+            questiontwo.remove();
             youLost();
         } else {
             return;
@@ -218,12 +249,135 @@ function clearButtons() {
         buttonFour.remove();
 }
 
-// wellDone()
+// youLost()
 // calls clearButtons()
-// questionHolder displays Well Done!
-// countdown = finalScore
-// buttonHolder element displays "your final score is + finalScore"
-// answerResponse element has "enter initials" + an input + submit button
+// answerResponse displays "out of time!" 
+// calls init()
+
+function youLost() {
+    clearButtons();
+    clearInterval(timer);
+    gameLost = true;
+    gameStarted = false;
+    gameWon = false;
+    postGame = true;
+    answerResponse.textContent = " ";
+    var failureTitle = document.createElement('h1');
+    var failureText = document.createElement('h2');
+    var failureButton = document.createElement('button');
+    failureTitle.className = "impressive-heading";
+    failureTitle.id = "failure-title";
+    failureText.id = "failure-text";
+    failureButton.id = "failure-button";
+    failureTitle.textContent = "Out of Time!"
+    failureText.textContent = "You'll do better next time"
+    failureButton.textContent = "Try Again?"
+    questionHolder.appendChild(failureTitle);
+    questionHolder.appendChild(failureText);
+    questionHolder.appendChild(failureButton);
+    failureButton.addEventListener("click", goBack);
+}
+// goBack()
+// this function clears whatever items may be on the page and calls init to being the game again
+// this was ridiculous to code because of all the possible game conditions
+// if I could go back in time and do it with jquery I would absolutely do it.
+
+function goBack() {
+    if (scoreReset === true) {
+        var resetBtn = document.getElementById("high-score-reset");
+        var gobackButton = document.getElementById("high-score-go-back");
+        var scoresTitle = document.getElementById("scores-title");
+        var highscoresOl = document.getElementById("ordered-list");
+            resetBtn.remove();
+            gobackButton.remove();
+            scoresTitle.remove();
+            athighScores = false;
+            init();
+    } else if (gameLost === true && gameStarted == false) {
+        if (athighScores === false) {
+        var failureTitle = document.getElementById("failure-title");
+        var failureText = document.getElementById("failure-text");
+        var failureButton = document.getElementById('failure-button');
+            failureTitle.remove();
+            failureText.remove();
+            failureButton.remove();
+            athighScores = false;
+            init();
+        } else {
+            if (initialsRecord.length > 0){
+                var resetBtn = document.getElementById("high-score-reset");
+                var gobackButton = document.getElementById("high-score-go-back");
+                var scoresTitle = document.getElementById("scores-title");
+                var highscoresOl = document.getElementById("ordered-list");
+                var listItems = document.getElementsByTagName('li');
+                    resetBtn.remove();
+                    gobackButton.remove();
+                    scoresTitle.remove();
+                var items = highscoresOl.getElementsByTagName("li");
+                for (var i = 0; i < items.length; ++i) {
+                    items[i].remove();
+                }
+                    highscoresOl.remove();
+                    athighScores = false;
+                    init();
+            } else {
+                var resetBtn = document.getElementById("high-score-reset");
+                var gobackButton = document.getElementById("high-score-go-back");
+                var scoresTitle = document.getElementById("scores-title");
+                var highscoresOl = document.getElementById("ordered-list");
+                    resetBtn.remove();
+                    gobackButton.remove();
+                    scoresTitle.remove();
+                    athighScores = false;
+                    init();
+            }
+        }
+    } else if (gameWon === true && gameStarted === false) {
+        var resetBtn = document.getElementById("high-score-reset");
+        var gobackButton = document.getElementById("high-score-go-back");
+        var scoresTitle = document.getElementById("scores-title");
+        var highscoresOl = document.getElementById("ordered-list");
+        var listItems = document.getElementsByTagName('li');
+            resetBtn.remove();
+            gobackButton.remove();
+            scoresTitle.remove();
+        var items = highscoresOl.getElementsByTagName("li");
+        for (var i = 0; i < items.length; ++i) {
+            items[i].remove();
+        }
+            highscoresOl.remove();
+            athighScores = false;
+            init();
+    } else if (gameWon === false && gameStarted === false) {
+        if (initialsRecord.length > 0){
+            var resetBtn = document.getElementById("high-score-reset");
+            var gobackButton = document.getElementById("high-score-go-back");
+            var scoresTitle = document.getElementById("scores-title");
+            var highscoresOl = document.getElementById("ordered-list");
+            var listItems = document.getElementsByTagName('li');
+                resetBtn.remove();
+                gobackButton.remove();
+                scoresTitle.remove();
+            var items = highscoresOl.getElementsByTagName("li");
+            for (var i = 0; i < items.length; ++i) {
+                items[i].remove();
+            }
+                highscoresOl.remove();
+                athighScores = false;
+                init();
+        } else {
+            var resetBtn = document.getElementById("high-score-reset");
+            var gobackButton = document.getElementById("high-score-go-back");
+            var scoresTitle = document.getElementById("scores-title");
+            var highscoresOl = document.getElementById("ordered-list");
+                resetBtn.remove();
+                gobackButton.remove();
+                scoresTitle.remove();
+                athighScores = false;
+                init();
+        }
+    }
+}
 
 // wellDone()
 // calls clearButtons()
@@ -231,8 +385,12 @@ function clearButtons() {
 // countdown = finalScore
 // buttonHolder element displays "your final score is + finalScore"
 // answerResponse element has "enter initials" + an input + submit button
+
 function wellDone() {
     clearButtons();
+    gameWon = true;
+    gameStarted = false;
+    postGame = true;
     finalScore = countDown;
     answerResponse.textContent = " ";
     var victoryTitle = document.createElement('h1');
@@ -258,29 +416,33 @@ function wellDone() {
     questionHolder.appendChild(victoryinputLabel);
     answerResponse.appendChild(victoryInput);
     answerResponse.appendChild(victoryButton);
-    victoryButton.addEventListener("click", storeResult);
+    victoryButton.addEventListener("click", prepareResult);
 }
 
-function storeResult() {
+// this was originally part of storeResult and wellDone, but was modified into a seperate function during debugging
+
+function prepareResult() {
     var input = document.getElementById("victory-input").value;
     initials = input;
-    
+    saveResult();
 }
-
-init();
-
-
-
 
 // storeResult()
 // this function stores the text from the text input generated by wellDone() into local storage and finalScore variable
 // removes elements inside answerResponse using event delegation
 // calls viewhighScores()
 
-// youLost()
-// calls clearButtons()
-// answerResponse displays "out of time!" 
-// calls init()
+function saveResult() {
+    initialsRecord.push(initials);
+    highScores.push(finalScore);
+    storeResult();
+}
+
+function storeResult() {
+    localStorage.setItem("initials", JSON.stringify(initialsRecord));
+    localStorage.setItem("finalScore", JSON.stringify(highScores));
+    gethighScores();
+}
 
 // viewhighScores()
 // this function summons the score board
@@ -291,12 +453,140 @@ init();
 // e.g. <li> initial[0] + "   " + finalScore[0] </li>
 // creates go back and reset scores buttons underneath
 
+function gethighScores() {
+    if (gameWon === true && gameStarted == false) {
+        if (athighScores === true) {
+            highscoreClicked = false;
+            return;
+        } else {
+            var victoryTitle = document.getElementById("victory-title");
+            var victoryText = document.getElementById("victory-text");
+            var victoryinputLabel = document.getElementById ("input-label");
+            var victoryInput = document.getElementById("victory-input");
+            var victoryButton = document.getElementById('victory-button');
+            var highscoresOl = document.createElement("ol");
+            victoryText.remove();
+            victoryinputLabel.remove();
+            victoryInput.remove();
+            victoryButton.remove(); 
+            victoryTitle.remove();
+            highscoresOl.id = "ordered-list";
+            answerHolder.appendChild(highscoresOl);
+            initialsRecord = JSON.parse(localStorage.getItem("initials"))
+            highScores = JSON.parse(localStorage.getItem("finalScore"))
+            viewhighScores();
+        }
+    } else if (preGame === true && highscoreClicked === true) {
+        var startBtnTwo = document.getElementById("start-button");
+        var introTitleTwo = document.getElementById("main-heading");
+        var introTextTwo = document.getElementById("paragraph-text");
+        var highscoresOl = document.createElement("ol");
+        startBtnTwo.remove();
+        introTitleTwo.remove();
+        introTextTwo.remove();
+        highscoresOl.id = "ordered-list";
+        answerHolder.appendChild(highscoresOl);
+        highscoreClicked = false;
+        initialsRecord = JSON.parse(localStorage.getItem("initials"))
+        highScores = JSON.parse(localStorage.getItem("finalScore"))
+        viewhighScores();
+    } else if (gameStarted === true && highscoreClicked === true) {
+        clearInterval(timer);
+        var question = document.getElementById("current-question");
+        var highscoresOl = document.createElement("ol");
+            highscoresOl.id = "ordered-list";
+            answerHolder.appendChild(highscoresOl);
+            highscoreClicked = false;
+            gameLost = false;
+            question.remove();
+            clearButtons();
+        initialsRecord = JSON.parse(localStorage.getItem("initials"))
+        highScores = JSON.parse(localStorage.getItem("finalScore"))
+        viewhighScores();
+    } else if (gameLost === true) {
+        if (athighScores === true) {
+            highscoreClicked = false;
+            return;
+        } else if (athighScores === false && postGame == true) {
+            var failureTitle = document.getElementById("failure-title");
+            var failureText = document.getElementById("failure-text");
+            var failureButton = document.getElementById('failure-button');
+            var highscoresOl = document.createElement("ol");
+                highscoresOl.id = "ordered-list";
+                answerHolder.appendChild(highscoresOl);
+                failureTitle.remove();
+                failureText.remove();
+                failureButton.remove();
+            initialsRecord = JSON.parse(localStorage.getItem("initials"))
+            highScores = JSON.parse(localStorage.getItem("finalScore"))
+            viewhighScores();
+        }
+    }
+}
+
+// viewhighScores()
+// this function summons the score board
+// question holder displays text "High Scores"
+// ordered list is created inside answerHolder
+// intial and finalscore are retreived from local storage and pushed into arrays 
+// for loop generates list items inside answerHolder iterating along the array until it hits the array length
+// e.g. <li> initial[0] + "   " + finalScore[0] </li>
+// creates go back and reset scores buttons underneath
+
+function viewhighScores() {
+    var scoresTitle = document.createElement('h1');
+    var resetBtn = document.createElement('button');
+    var gobackButton = document.createElement('button');
+        athighScores = true;
+        gameStarted = false;
+        resetBtn.textContent = "Reset Highscores";
+        gobackButton.textContent = "Go back?";
+        scoresTitle.textContent = "High Scores!";
+        scoresTitle.className = "impressive-heading";
+        scoresTitle.id = "scores-title";
+        resetBtn.id = "high-score-reset";
+        gobackButton.id = "high-score-go-back";
+        questionHolder.appendChild(scoresTitle);
+        answerResponse.appendChild(gobackButton);
+        answerResponse.appendChild(resetBtn);
+    var highscoresOl = document.getElementById("ordered-list");
+        if (highScores.length !=null) {
+            for (var i = 0; i < highScores.length; i++) {
+                var initialforLi = initialsRecord[i];
+                var scoreforLi = highScores[i];
+                var listItem = document.createElement("li");
+                    listItem.className = "score-list-item";
+                    listItem.textContent = i + "            " + initialforLi + "             " + scoreforLi; 
+                    highscoresOl.appendChild(listItem);
+                }
+            } else {
+                return;
+            }
+    gobackButton.addEventListener("click", goBack);
+    resetBtn.addEventListener("click", resetScores);
+}
 // resetScores()
 // this function uses localStorage.removeItem(""); to remove the objects stored into local storage
 // it uses event delegation to clear the ol and li from answerholder
+function resetScores () {
+    scoreReset = true;
+    localStorage.removeItem("initials");
+    localStorage.removeItem("finalScore");
+    var highscoresOl = document.getElementById("ordered-list");
+    var listItems = document.getElementsByTagName('li');
+    var items = highscoresOl.getElementsByTagName("li");
+    if (items.length > 0) {
+        for (var i = 0; i < items.length; ++i) {
+        items[i].remove();
+        }
+        highscoresOl.remove();
+    } else {
+        return;
+    }
+}
 
-// goBack()
-// clears question holder of text
-// clearButtons()
-// init()
+init();
+
+
+
 
