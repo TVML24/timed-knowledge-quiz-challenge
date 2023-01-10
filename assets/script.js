@@ -37,8 +37,7 @@ var scoreReset = false;
 // event handler for high scores button
 var permanenthighscoresButton = document.getElementById("view-high-scores");
     permanenthighscoresButton.addEventListener("click", gethighScores);
-        highscoreClicked = true;
-        console.log(highscoreClicked);
+
 
 // establish object with questions as value in key value pair
 var questions = ["Which Javascript method can be used to get the sum of all the numbers in an array?", 
@@ -72,6 +71,8 @@ function init() {
         introText.textContent = "Try to answer the folowing code-related questions within the time limit. Keep in mind that incorrect answers will penalise your score-time by ten seconds!";
         startBtn.textContent = "Start Quiz!";
         introTitle.className = "impressive-heading";
+        introText.className = "paragraph";
+        startBtn.className = "intro-button";
         introTitle.id = "main-heading";
         introText.id = "paragraph-text";
         startBtn.id = "start-button";
@@ -82,6 +83,8 @@ function init() {
         preGame = true;
         postGame = false;
         scoreReset = false;
+        gameWon = false;
+        gameLost = false;
 }
 
 // startGame function that runs from an event listener attached to the button built by init()
@@ -99,8 +102,6 @@ function startGame() {
         preGame = false;
         initials = null;
         gameStarted = true;
-        gameWon = false;
-        gameLost = false;
     timerFunction();
     questionChooser();
 }
@@ -304,7 +305,7 @@ function goBack() {
             athighScores = false;
             init();
         } else {
-            if (initialsRecord.length > 0){
+            if (initialsRecord != null){
                 var resetBtn = document.getElementById("high-score-reset");
                 var gobackButton = document.getElementById("high-score-go-back");
                 var scoresTitle = document.getElementById("scores-title");
@@ -349,7 +350,7 @@ function goBack() {
             athighScores = false;
             init();
     } else if (gameWon === false && gameStarted === false) {
-        if (initialsRecord.length > 0){
+        if (initialsRecord != null){
             var resetBtn = document.getElementById("high-score-reset");
             var gobackButton = document.getElementById("high-score-go-back");
             var scoresTitle = document.getElementById("scores-title");
@@ -402,6 +403,9 @@ function wellDone() {
     victoryButton.type = "submit";
     victoryInput.name = "intitials-input";
     victoryTitle.className = "impressive-heading";
+    victoryText.className = "victory-para";
+    victoryInput.className = "victory-input-label";
+    victoryinputLabel.className = "victory-input-label";
     victoryinputLabel.id = "input-label";
     victoryTitle.id = "victory-title";
     victoryText.id = "victory-text";
@@ -456,7 +460,6 @@ function storeResult() {
 function gethighScores() {
     if (gameWon === true && gameStarted == false) {
         if (athighScores === true) {
-            highscoreClicked = false;
             return;
         } else {
             var victoryTitle = document.getElementById("victory-title");
@@ -476,7 +479,7 @@ function gethighScores() {
             highScores = JSON.parse(localStorage.getItem("finalScore"))
             viewhighScores();
         }
-    } else if (preGame === true && highscoreClicked === true) {
+    } else if (preGame === true && gameStarted === false) {
         var startBtnTwo = document.getElementById("start-button");
         var introTitleTwo = document.getElementById("main-heading");
         var introTextTwo = document.getElementById("paragraph-text");
@@ -490,22 +493,20 @@ function gethighScores() {
         initialsRecord = JSON.parse(localStorage.getItem("initials"))
         highScores = JSON.parse(localStorage.getItem("finalScore"))
         viewhighScores();
-    } else if (gameStarted === true && highscoreClicked === true) {
-        clearInterval(timer);
-        var question = document.getElementById("current-question");
-        var highscoresOl = document.createElement("ol");
-            highscoresOl.id = "ordered-list";
-            answerHolder.appendChild(highscoresOl);
-            highscoreClicked = false;
-            gameLost = false;
-            question.remove();
-            clearButtons();
-        initialsRecord = JSON.parse(localStorage.getItem("initials"))
-        highScores = JSON.parse(localStorage.getItem("finalScore"))
-        viewhighScores();
+    } else if (gameStarted === true && gameWon === false) {
+        if (gameLost === false && athighScores === false)
+                clearInterval(timer);
+            var question = document.getElementById("current-question");
+            var highscoresOl = document.createElement("ol");
+                highscoresOl.id = "ordered-list";
+                answerHolder.appendChild(highscoresOl);
+                question.remove();
+                clearButtons();
+            initialsRecord = JSON.parse(localStorage.getItem("initials"))
+            highScores = JSON.parse(localStorage.getItem("finalScore"))
+                viewhighScores();
     } else if (gameLost === true) {
         if (athighScores === true) {
-            highscoreClicked = false;
             return;
         } else if (athighScores === false && postGame == true) {
             var failureTitle = document.getElementById("failure-title");
@@ -543,27 +544,29 @@ function viewhighScores() {
         gobackButton.textContent = "Go back?";
         scoresTitle.textContent = "High Scores!";
         scoresTitle.className = "impressive-heading";
+        gobackButton.className = "back-button";
         scoresTitle.id = "scores-title";
         resetBtn.id = "high-score-reset";
         gobackButton.id = "high-score-go-back";
         questionHolder.appendChild(scoresTitle);
         answerResponse.appendChild(gobackButton);
         answerResponse.appendChild(resetBtn);
+        gobackButton.addEventListener("click", goBack);
+        resetBtn.addEventListener("click", resetScores);
     var highscoresOl = document.getElementById("ordered-list");
-        if (highScores.length !=null) {
+        if (highScores === null) {
+            return;
+        } else {
             for (var i = 0; i < highScores.length; i++) {
                 var initialforLi = initialsRecord[i];
                 var scoreforLi = highScores[i];
                 var listItem = document.createElement("li");
                     listItem.className = "score-list-item";
-                    listItem.textContent = i + "            " + initialforLi + "             " + scoreforLi; 
+                    listItem.textContent = "            " + initialforLi + "             " + scoreforLi; 
                     highscoresOl.appendChild(listItem);
-                }
-            } else {
-                return;
             }
-    gobackButton.addEventListener("click", goBack);
-    resetBtn.addEventListener("click", resetScores);
+        }
+
 }
 // resetScores()
 // this function uses localStorage.removeItem(""); to remove the objects stored into local storage
@@ -583,6 +586,13 @@ function resetScores () {
     } else {
         return;
     }
+    resetScoreholders();
+}
+
+// fixes issue with arrays becoming undefined
+function resetScoreholders() {
+    highScores = JSON.parse(localStorage.getItem('highScores')) || [];
+    initialsRecord = JSON.parse(localStorage.getItem("initials")) || [];
 }
 
 init();

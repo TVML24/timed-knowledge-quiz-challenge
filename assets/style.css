@@ -1,30 +1,51 @@
+body {
+    background-image: url("./images/stars.jpg");
+}
+
 header {
     font-size: 26px;
     line-height: 2;
-    background: yellow;
     display: flex;
     justify-content: space-between;
     padding-bottom: 1%;
 }
 
+h1, h2, h3, h4, p {
+    color: antiquewhite;
+}
+
+ol { 
+    margin-left: 10%;
+    margin-bottom: 10%;
+    list-style-type: upper-roman;
+}
+
+li {
+    font-size: 28px;
+    color: white;
+}
 body {
     height: 100vh;
 }
 
 #high-score-link {
-    background: green;
     padding-right: 3%;
     padding-left: 3%;
 }
 
+#view-high-scores {
+    background: purple;
+    color: white;
+}
+
 #time-holder {
-    background: green;
+    font-size: 22px;
+    color: white;
     padding-right: 8%;
     padding-left: 3%;
 }
 
 main {
-    background: orange;
     position: relative;
     height: 100%;
     display: flex;
@@ -32,7 +53,7 @@ main {
 }
 
 .wrapper {
-    background: lightcoral;
+    background: rgba(48, 38, 38, 0.904);
     height: 100%;
     width: 60%;
 }
@@ -50,6 +71,56 @@ main {
 .answer-button {
     margin-top: 10px;
     margin-bottom: 10px;
-    padding-top: 5px;
-    padding-bottom: 5px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    font-size: 28px;
+    background: purple;
+    color: antiquewhite;
+}
+
+.impressive-heading {
+    margin-top: 5%;
+    font-size: 45px;
+    margin-bottom: 5%;
+    text-align: center;
+}
+
+.paragraph {
+    font-size: 30px;
+    text-align: center;
+    margin-bottom: 5%;
+}
+
+.intro-button {
+    margin-left: 40%;
+    background-color: blueviolet;
+    color: antiquewhite;
+    font-size: 28px;
+}
+
+.printed-question {
+    margin-top: 4%;
+    font-size: 30px;
+    margin-left: 4%;
+    margin-bottom: 5%;
+}
+
+#answer-container {
+    color: white;
+    font-size: 32px;
+}
+
+.victory-para {
+    margin-left: 4%;
+    font-size: 32px;
+    margin-bottom: 3%;
+}
+
+.victory-input-label {
+    margin-left: 6%;
+}
+
+.back-button {
+    margin-left: 12%;
+    margin-right: 10%;
 }
