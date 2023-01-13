@@ -52,14 +52,14 @@ var questions = ["Which Javascript method can be used to get the sum of all the 
 
 
 // Establish object with question and answers as key value pairs
-var correctAnswers = [".concat()", "Anywhere inside that 'if statement'", ".map()", ".push()", ".filter()", ".remove()", ".stopPropagation()", ".split()", ".preventDefault()", ".setInterval()"];
+var correctAnswers = [".reduce()", "Anywhere inside that 'if statement'", ".map()", ".push()", ".filter()", ".remove()", ".stopPropagation()", ".split()", ".preventDefault()", ".setInterval()"];
 
 
 // Establish object with questions identical to the above and four possible answers
 var buttononeAnswers = [".join()", "Anywhere inside the function", ".for()", ".splice()", ".filter()", ".remove()", ".noeventBubble()", ".filter()", ".stopPropagation()", ".setTimeout()"];
 var buttontwoAnswers = [".sumAll()", "Anywhere inside that 'if statement'", ".while()", ".push()", ".sort()", ".delete()", ".preventPropagation()", ".insert()", ".stopDefault()", ".setTimer()"];
 var buttonthreeAnswers = [".combine()", "Globally", ".map()", ".append()", ".matchTo()", ".unAppend()", ".stopBubble()", ".split()", ".preventDefault()", ".executeInterval()"];
-var buttonfourAnswers = [".concat()", "In any other function it is referenced", ".iterateOver()", ".addTo()", ".getvalueBy()", ".domRemove()", ".stopPropagation()", ".createArray()", ".cancel()", ".setInterval()"];
+var buttonfourAnswers = [".reduce()", "In any other function it is referenced", ".iterateOver()", ".addTo()", ".getvalueBy()", ".domRemove()", ".stopPropagation()", ".createArray()", ".cancel()", ".setInterval()"];
 
 // init() function that constructs heading with start button and instructions inside questionHolder
 // updates game conditions that have been changed through the course of the game
